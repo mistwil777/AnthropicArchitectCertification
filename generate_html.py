@@ -197,7 +197,7 @@ HTML_HEADER = """<!DOCTYPE html>
   }}
   .diagram-wrap svg {{
     display: block;
-    max-width: 100%;
+    min-width: 600px;
     height: auto;
   }}
 
