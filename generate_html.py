@@ -178,6 +178,11 @@ HTML_HEADER = """<!DOCTYPE html>
     padding: 1.5rem;
     margin: 1.2rem 0;
     text-align: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }}
+  .mermaid svg {{
+    min-width: 480px;
   }}
 
   /* SVG */
@@ -188,6 +193,12 @@ HTML_HEADER = """<!DOCTYPE html>
     padding: 1.2rem;
     margin: 1.2rem 0;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }}
+  .diagram-wrap svg {{
+    display: block;
+    max-width: 100%;
+    height: auto;
   }}
 
   /* Flashcards — flip au clic */
