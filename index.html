@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anthropic Architect Pro — Cours de révision</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: false, theme: 'dark', flowchart: { curve: 'basis' } });</script>
+<style>
+  :root {
+    --blue: #4f8ef7;
+    --aqua: #2dd4a0;
+    --violet: #a78bfa;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --ink: #c4bede;
+    --bg: #13151f;
+    --surface: #1c1f2e;
+    --surface2: #252840;
+    --border: #2e3250;
+    --text: #ddd8f0;
+    --muted: #7874a0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .wrapper { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* TOC compact + dépliable */
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  nav.toc > summary {
+    cursor: pointer; font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 0.12em; font-weight: 700; color: var(--muted);
+    list-style: none; display: flex; align-items: center; gap: 0.5rem;
+  }
+  nav.toc > summary::before { content: '▸'; transition: transform 0.2s; }
+  nav.toc[open] > summary::before { content: '▾'; }
+  nav.toc ol { padding-left: 1.1rem; margin-top: 0.8rem; }
+  nav.toc > ol > li { margin: 0.5rem 0; }
+  nav.toc details { margin: 0.2rem 0; }
+  nav.toc details summary {
+    cursor: pointer; color: var(--blue); font-size: 0.9rem; font-weight: 500;
+    list-style: none; display: flex; align-items: center; gap: 0.4rem;
+  }
+  nav.toc details summary::before { content: '▸'; font-size: 0.7rem; color: var(--muted); }
+  nav.toc details[open] summary::before { content: '▾'; }
+  nav.toc ul { list-style: none; padding-left: 1.2rem; margin-top: 0.3rem; }
+  nav.toc ul li { margin: 0.2rem 0; }
+  nav.toc ul li a { color: var(--muted); font-size: 0.84rem; }
+  nav.toc ul li a:hover { color: var(--blue); }
+
+  /* Sections dépliables */
+  .section-wrap { margin: 2rem 0; }
+  .section-wrap > summary {
+    cursor: pointer; list-style: none;
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-wrap > summary h2 {
+    margin: 0; border: none; padding: 0; font-size: 1.25rem;
+    font-weight: 700; color: var(--ink);
+  }
+  .section-wrap > summary::before {
+    content: '▸'; color: var(--muted); font-size: 0.8rem; flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .section-wrap[open] > summary::before { content: '▾'; }
+  .section-wrap > summary::-webkit-details-marker { display: none; }
+  .section-content { padding-top: 0.5rem; }
+
+  /* Headings */
+  h1 { font-size: 1.8rem; font-weight: 700; color: var(--blue); margin-bottom: 0.3rem; }
+  h2 {
+    font-size: 1.25rem; font-weight: 700; color: var(--ink);
+    margin: 2.5rem 0 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1rem; font-weight: 600; color: var(--violet); margin: 1.6rem 0 0.6rem; }
+
+  /* Prose */
+  p { margin-bottom: 0.8rem; color: var(--text); }
+  strong { color: var(--ink); font-weight: 700; }
+  em { color: var(--muted); font-style: italic; }
+  code {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 0.1em 0.4em;
+    font-family: 'Fira Code', 'Menlo', monospace; font-size: 0.86em;
+    color: var(--violet);
+  }
+  pre {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0;
+  }
+  pre code { background: none; border: none; padding: 0; font-size: 0.86em; color: var(--text); }
+
+  /* Tables — compactes */
+  table {
+    width: 100%; border-collapse: collapse; margin: 1rem 0;
+    font-size: 0.88em;
+  }
+  th {
+    background: var(--surface2); color: var(--ink);
+    padding: 0.5rem 0.8rem; text-align: left; font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); background: var(--surface); }
+  tr:last-child td { border-bottom: none; }
+
+  /* Callouts */
+  .callout {
+    border-left: 3px solid var(--blue);
+    background: rgba(79,142,247,0.08);
+    border-radius: 0 6px 6px 0;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+  }
+  .callout.insight { border-color: var(--aqua); background: rgba(45,212,160,0.08); }
+  .callout.warning { border-color: var(--yellow); background: rgba(251,191,36,0.08); }
+  .callout.rule { border-color: var(--violet); background: rgba(167,139,250,0.08); }
+  .callout.limit { border-color: var(--red); background: rgba(248,113,113,0.08); }
+  .callout.situation { border-color: var(--blue); background: rgba(79,142,247,0.05); }
+  .callout .callout-label {
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em;
+    font-weight: 700; margin-bottom: 0.35rem; color: var(--muted);
+  }
+  .callout p { margin-bottom: 0.4rem; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* Mermaid */
+  .mermaid {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.2rem 0;
+    text-align: center;
+  }
+
+  /* SVG */
+  .diagram-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin: 1.2rem 0;
+    overflow-x: auto;
+  }
+
+  /* Flashcards — flip au clic */
+  .flashcards-wrap {
+    display: flex; gap: 0.8rem; overflow-x: auto;
+    padding-bottom: 0.6rem; margin: 1rem 0;
+    scrollbar-width: thin;
+  }
+  .flashcard {
+    min-width: 210px; max-width: 250px; flex-shrink: 0;
+    height: 140px;
+    perspective: 800px; cursor: pointer;
+  }
+  .flashcard-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.45s cubic-bezier(.4,0,.2,1);
+    transform-style: preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .flashcard-front, .flashcard-back {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    border-radius: 8px; padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .flashcard-front {
+    background: var(--surface);
+    border-top: 2px solid var(--blue);
+  }
+  .flashcard-back {
+    background: var(--surface2);
+    border-top: 2px solid var(--aqua);
+    transform: rotateY(180deg);
+  }
+  .flashcard .fc-hint {
+    font-size: 0.65rem; color: var(--muted); margin-bottom: 0.4rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .flashcard .fc-q {
+    font-size: 0.84rem; color: var(--text); line-height: 1.4; font-weight: 500;
+  }
+  .flashcard .fc-r {
+    font-size: 0.88rem; color: var(--text); line-height: 1.5;
+  }
+
+  /* QCM */
+  .qcm {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem; margin: 1rem 0;
+  }
+  .qcm .qcm-q { font-weight: 600; margin-bottom: 0.6rem; }
+  .qcm ol { padding-left: 1.2rem; }
+  .qcm li { margin: 0.3rem 0; }
+  details.qcm-answer { margin-top: 0.6rem; font-size: 0.88rem; }
+  details.qcm-answer summary { cursor: pointer; color: var(--muted); }
+
+  /* Lists */
+  .callout ul, .callout ol { padding-left: 1.3rem; margin: 0.4rem 0; }
+  .callout li { margin: 0.25rem 0; }
+  ul { padding-left: 1.4rem; margin: 0.6rem 0; }
+  ol { padding-left: 1.4rem; margin: 0.6rem 0; }
+  li { margin: 0.3rem 0; }
+
+  blockquote {
+    border-left: 2px solid var(--border);
+    padding: 0.2rem 0.9rem;
+    color: var(--muted);
+    margin: 0.7rem 0;
+    font-style: italic;
+  }
+  /* Navigation sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2rem; padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .nav-btn {
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.5rem 1.1rem; cursor: pointer; font-size: 0.88rem;
+    transition: background 0.15s, border-color 0.15s;
+    font-family: inherit;
+  }
+  .nav-btn:hover { background: var(--border); border-color: var(--blue); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-progress {
+    font-size: 0.78rem; color: var(--muted); text-align: center; flex: 1;
+  }
+</style>
+<script>
+var _renderedSections = {};
+
+function showSection(idx) {
+  const sections = document.querySelectorAll('.section');
+  const total = sections.length;
+  if (idx < 0 || idx >= total) return;
+
+  sections.forEach((s, i) => s.classList.toggle('active', i === idx));
+  document.querySelectorAll('.toc-link').forEach((l, i) => l.classList.toggle('toc-active', i === idx));
+
+  // Update nav buttons in current section
+  const activeSection = sections[idx];
+  const btnPrev = activeSection.querySelector('.btn-prev');
+  const btnNext = activeSection.querySelector('.btn-next');
+  const prog = activeSection.querySelector('.nav-progress');
+  if (btnPrev) btnPrev.disabled = idx === 0;
+  if (btnNext) btnNext.disabled = idx === total - 1;
+  if (prog) prog.textContent = (idx + 1) + ' / ' + total;
+
+  window.currentSection = idx;
+  localStorage.setItem('currentSection', idx);
+
+  // Render mermaid only once per section, only when visible
+  if (!_renderedSections[idx]) {
+    _renderedSections[idx] = true;
+    const nodes = activeSection.querySelectorAll('.mermaid');
+    if (nodes.length > 0) {
+      setTimeout(function() {
+        mermaid.run({ nodes: nodes });
+      }, 50);
+    }
+  }
+  window.scrollTo(0, 0);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const saved = parseInt(localStorage.getItem('currentSection') || '0');
+  window.currentSection = 0;
+  showSection(isNaN(saved) ? 0 : saved);
+});
+</script>
+</head>
+<body>
+<div class="wrapper">
+<h1>Anthropic Certified Architect Pro<br><small style="font-size:0.5em;color:var(--muted);font-weight:400;">Cours de révision</small></h1>
+<style>.toc-active { font-weight: 700; color: var(--aqua) !important; }</style><details class="toc"><summary>Sommaire</summary><ol>
+<li><a class="toc-link toc-active" href="#" onclick="showSection(0);return false;">Les 4 décisions architecturales</a></li>
+<li><a class="toc-link " href="#" onclick="showSection(1);return false;">Comment Claude se comporte</a><ul>
+<li><a href="#les-4-propri-t-s-fondamentales" onclick="showSection(1);return false;">Les 4 propriétés fondamentales</a></li>
+</ul></li>
+<li><a class="toc-link " href="#" onclick="showSection(2);return false;">Décomposition</a></li>
+<li><a class="toc-link " href="#" onclick="showSection(3);return false;">Les 7 primitives</a></li>
+<li><a class="toc-link " href="#" onclick="showSection(4);return false;">Sélection de modèles</a><ul>
+<li><a href="#les-3-patterns" onclick="showSection(4);return false;">Les 3 patterns</a></li>
+<li><a href="#arbre-de-d-cision-quel-pattern-choisir" onclick="showSection(4);return false;">Arbre de décision — quel pattern choisir ?</a></li>
+<li><a href="#les-4-sous-patterns-du-workflow" onclick="showSection(4);return false;">Les 4 sous-patterns du Workflow</a></li>
+</ul></li>
+<li><a class="toc-link " href="#" onclick="showSection(5);return false;">Systèmes multi-agents</a><ul>
+<li><a href="#architecture-fan-out" onclick="showSection(5);return false;">Architecture Fan-out</a></li>
+<li><a href="#r-cup-rabilit-des-d-faillances" onclick="showSection(5);return false;">Récupérabilité des défaillances</a></li>
+</ul></li>
+</ol></details><h1 id="module-1-conception-de-plateformes-et-de-solutions-claude">Module 1 — Conception de plateformes et de solutions Claude</h1>
+
+<div class="section active" data-index="0"><h2 id="les-4-d-cisions-architecturales">Les 4 décisions architecturales</h2>
+<p>Concevoir une solution Claude = répondre à 4 questions dans cet ordre. Chaque décision contraint la suivante.</p>
+<div class="mermaid">
+flowchart LR
+  D1["1 - Decomposition"]
+  D2["2 - Pattern"]
+  D3["3 - Architecture"]
+  D4["4 - Modele + Entree"]
+  D1 --> D2 --> D3 --> D4
+  style D1 fill:#1c1f2e,stroke:#4f8ef7,color:#ddd8f0
+  style D2 fill:#1c1f2e,stroke:#a78bfa,color:#ddd8f0
+  style D3 fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style D4 fill:#1c1f2e,stroke:#fbbf24,color:#ddd8f0
+</div>
+<p><strong>Exemple fil rouge :</strong> assistant de traitement de sinistres d'assurance.</p>
+<ul style="padding-left:1.5rem;margin:0.8rem 0;">
+<li>D1 : Claude lit + rédige / SQL vérifie la couverture / Humain valide > 5 000 £</li>
+<li>D2 : Workflow (étapes connues à l'avance, coût d'erreur élevé)</li>
+<li>D3 : RAG sur les polices d'assurance</li>
+<li>D4 : claude-sonnet, context window compressée, API directe</li>
+</ul>
+<div class="callout rule"><div class="callout-label">Règle</div><strong>Séquence obligatoire.</strong> Sauter D1 pour aller à D4 = optimiser la latence d'un système mal décomposé.</div>
+<div class="section-nav"><button class="nav-btn btn-prev" onclick="showSection(-1)" disabled>← Précédent</button><span class="nav-progress">1 / 6</span><button class="nav-btn btn-next" onclick="showSection(1)" >Suivant →</button></div></div>
+<div class="section " data-index="1"><h2 id="comment-claude-se-comporte">Comment Claude se comporte</h2>
+<h3 id="les-4-propri-t-s-fondamentales">Les 4 propriétés fondamentales</h3>
+<div class="diagram-wrap"><svg viewBox="0 0 880 185" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="11">  <rect x="5" y="5" width="208" height="175" rx="7" fill="#1c1f2e" stroke="#4f8ef7" stroke-width="1.5"/>  <text x="109" y="27" fill="#4f8ef7" font-size="11" font-weight="bold" text-anchor="middle">TOKEN PREDICTION</text>  <text x="109" y="43" fill="#7874a0" font-size="9" text-anchor="middle">Non-déterministe</text>  <line x1="15" y1="51" x2="203" y2="51" stroke="#2e3250"/>  <text x="15" y="67" fill="#2dd4a0" font-size="10">✓ Instructions concrètes</text>  <text x="15" y="82" fill="#2dd4a0" font-size="10">✓ Formats définis</text>  <text x="15" y="103" fill="#f87171" font-size="10">✗ Calculs exacts</text>  <text x="15" y="118" fill="#f87171" font-size="10">✗ Instructions ambiguës</text>  <text x="15" y="143" fill="#7874a0" font-size="9">→ eval + structured output</text>  <text x="15" y="158" fill="#7874a0" font-size="9">→ reformuler l'objectif</text>  <rect x="223" y="5" width="208" height="175" rx="7" fill="#1c1f2e" stroke="#a78bfa" stroke-width="1.5"/>  <text x="327" y="27" fill="#a78bfa" font-size="11" font-weight="bold" text-anchor="middle">KNOWLEDGE</text>  <text x="327" y="43" fill="#7874a0" font-size="9" text-anchor="middle">Figée à l'entraînement</text>  <line x1="233" y1="51" x2="421" y2="51" stroke="#2e3250"/>  <text x="233" y="67" fill="#2dd4a0" font-size="10">✓ Raisonnement général</text>  <text x="233" y="82" fill="#2dd4a0" font-size="10">✓ Sujets courants</text>  <text x="233" y="103" fill="#f87171" font-size="10">✗ Données privées</text>  <text x="233" y="118" fill="#f87171" font-size="10">✗ Évolution rapide</text>  <text x="233" y="143" fill="#7874a0" font-size="9">→ RAG · Tools · MCP</text>  <text x="233" y="158" fill="#7874a0" font-size="9">→ source externe = référence</text>  <rect x="441" y="5" width="208" height="175" rx="7" fill="#1c1f2e" stroke="#2dd4a0" stroke-width="1.5"/>  <text x="545" y="27" fill="#2dd4a0" font-size="11" font-weight="bold" text-anchor="middle">CONTEXT WINDOW</text>  <text x="545" y="43" fill="#7874a0" font-size="9" text-anchor="middle">Token budget fixe</text>  <line x1="451" y1="51" x2="639" y2="51" stroke="#2e3250"/>  <text x="451" y="67" fill="#2dd4a0" font-size="10">✓ Raisonnement sur corpus</text>  <text x="451" y="82" fill="#2dd4a0" font-size="10">✓ Explicite et délimité</text>  <text x="451" y="103" fill="#f87171" font-size="10">✗ Taille fixe</text>  <text x="451" y="118" fill="#f87171" font-size="10">✗ Inclusion/ordre = coût</text>  <text x="451" y="143" fill="#7874a0" font-size="9">→ prioriser · tronquer</text>  <text x="451" y="158" fill="#7874a0" font-size="9">→ résumer · externaliser</text>  <rect x="659" y="5" width="216" height="175" rx="7" fill="#1c1f2e" stroke="#fbbf24" stroke-width="1.5"/>  <text x="767" y="27" fill="#fbbf24" font-size="11" font-weight="bold" text-anchor="middle">STEERABILITY</text>  <text x="767" y="43" fill="#7874a0" font-size="9" text-anchor="middle">Adapte au system prompt</text>  <line x1="669" y1="51" x2="865" y2="51" stroke="#2e3250"/>  <text x="669" y="67" fill="#2dd4a0" font-size="10">✓ Rôles · formats</text>  <text x="669" y="82" fill="#2dd4a0" font-size="10">✓ Contraintes métier</text>  <text x="669" y="103" fill="#f87171" font-size="10">✗ Dérive si contradictions</text>  <text x="669" y="118" fill="#f87171" font-size="10">✗ Confiance ≠ validité</text>  <text x="669" y="143" fill="#7874a0" font-size="9">→ system prompt clair</text>  <text x="669" y="158" fill="#7874a0" font-size="9">→ tests de régression</text></svg></div>
+<div class="flashcards-wrap"><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Token Prediction → conséquence architecturale principale ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r"><strong>Non-déterminisme</strong> — même input, outputs différents. Nécessite des <strong>evals</strong>.</div></div></div></div><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Steerability : "confiance ≠ validité" — implication ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r">Claude peut être très confiant et <strong>faux simultanément</strong>. La vérification est un choix architectural.</div></div></div></div><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Knowledge gap → atténuation ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r">Système externe comme référence : <strong>RAG, Tools, MCP</strong>. Jamais la knowledge du modèle seul.</div></div></div></div></div>
+<div class="section-nav"><button class="nav-btn btn-prev" onclick="showSection(0)" >← Précédent</button><span class="nav-progress">2 / 6</span><button class="nav-btn btn-next" onclick="showSection(2)" >Suivant →</button></div></div>
+<div class="section " data-index="2"><h2 id="d-composition">Décomposition</h2>
+<div class="mermaid">
+flowchart TD
+  T[Tache] --> Q1{Donnees live en base ?}
+  Q1 -- Oui --> SE[Systeme existant]
+  Q1 -- Non --> Q2{Action irreversible ?}
+  Q2 -- Oui --> H[Humain]
+  Q2 -- Non --> Q3{Travail de langage ?}
+  Q3 -- Oui --> C[Claude]
+  Q3 -- Non --> SE2[Systeme existant]
+  style SE fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style SE2 fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style H fill:#1c1f2e,stroke:#f87171,color:#ddd8f0
+  style C fill:#1c1f2e,stroke:#4f8ef7,color:#ddd8f0
+</div>
+<div class="callout rule"><div class="callout-label">Règle</div><strong>Piège exam :</strong> lookup de données existantes (garantie, stock, tier, politique publiée) → <strong>Système existant</strong>, même si ça ressemble à du jugement.</div>
+<div class="callout situation"><div class="callout-label">Situation réelle</div><strong>Règle sinistre > £5 000 confiée à Claude :</strong>
+- 14 000 sinistres → 41 mal routés ("environ cinq mille livres" ≠ seuil déclencheur)
+- Dérive silencieuse — détectée à l'audit, pas par le système
+- Cause : règle déterministe confiée à un système probabiliste</div>
+<div class="flashcards-wrap"><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">"Vérifier si la garantie s'applique à ce numéro de série" → qui ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r"><strong>Système existant</strong> — lookup en base, pas un jugement.</div></div></div></div><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">"Émettre le remboursement" → qui ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r"><strong>Humain</strong> — action financière irréversible, même si l'éligibilité est automatique.</div></div></div></div></div>
+<div class="section-nav"><button class="nav-btn btn-prev" onclick="showSection(1)" >← Précédent</button><span class="nav-progress">3 / 6</span><button class="nav-btn btn-next" onclick="showSection(3)" >Suivant →</button></div></div>
+<div class="section " data-index="3"><h2 id="les-7-primitives">Les 7 primitives</h2>
+<div class="diagram-wrap"><svg viewBox="0 0 750 310" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">  <rect x="25" y="8" width="170" height="72" rx="7" fill="#1c1f2e" stroke="#4f8ef7" stroke-width="1.5"/>  <text x="110" y="32" fill="#4f8ef7" font-size="12" font-weight="bold" text-anchor="middle">Tools</text>  <text x="110" y="50" fill="#ddd8f0" font-size="10" text-anchor="middle">Agir</text>  <text x="110" y="68" fill="#7874a0" font-size="9" text-anchor="middle">fonction appelable par le modèle</text>  <rect x="205" y="8" width="170" height="72" rx="7" fill="#1c1f2e" stroke="#4f8ef7" stroke-width="1.5"/>  <text x="290" y="32" fill="#4f8ef7" font-size="12" font-weight="bold" text-anchor="middle">MCP</text>  <text x="290" y="50" fill="#ddd8f0" font-size="10" text-anchor="middle">Connecter</text>  <text x="290" y="68" fill="#7874a0" font-size="9" text-anchor="middle">protocole exposant un set de Tools</text>  <rect x="385" y="8" width="170" height="72" rx="7" fill="#1c1f2e" stroke="#a78bfa" stroke-width="1.5"/>  <text x="470" y="32" fill="#a78bfa" font-size="12" font-weight="bold" text-anchor="middle">Subagents</text>  <text x="470" y="50" fill="#ddd8f0" font-size="10" text-anchor="middle">Isoler / paralléliser</text>  <text x="470" y="68" fill="#7874a0" font-size="9" text-anchor="middle">contexte séparé, tâche délimitée</text>  <rect x="25" y="100" width="170" height="72" rx="7" fill="#1c1f2e" stroke="#f87171" stroke-width="1.5"/>  <text x="110" y="124" fill="#f87171" font-size="12" font-weight="bold" text-anchor="middle">Hooks</text>  <text x="110" y="142" fill="#ddd8f0" font-size="10" text-anchor="middle">Garantir</text>  <text x="110" y="160" fill="#7874a0" font-size="9" text-anchor="middle">code déterministe sur événement</text>  <rect x="205" y="100" width="170" height="72" rx="7" fill="#1c1f2e" stroke="#fbbf24" stroke-width="1.5"/>  <text x="290" y="124" fill="#fbbf24" font-size="12" font-weight="bold" text-anchor="middle">Skills</text>  <text x="290" y="142" fill="#ddd8f0" font-size="10" text-anchor="middle">Packager</text>  <text x="290" y="160" fill="#7874a0" font-size="9" text-anchor="middle">procédure versionnée réutilisable</text>  <rect x="25" y="195" width="255" height="72" rx="7" fill="#1c1f2e" stroke="#2dd4a0" stroke-width="1.5"/>  <text x="152" y="220" fill="#2dd4a0" font-size="12" font-weight="bold" text-anchor="middle">Agent Teams</text>  <text x="152" y="238" fill="#ddd8f0" font-size="10" text-anchor="middle">Coordonner des pairs</text>  <text x="152" y="256" fill="#7874a0" font-size="9" text-anchor="middle">agents pairs — objectif partagé</text>  <rect x="290" y="195" width="265" height="72" rx="7" fill="#1c1f2e" stroke="#2dd4a0" stroke-width="1.5"/>  <text x="422" y="220" fill="#2dd4a0" font-size="12" font-weight="bold" text-anchor="middle">Dynamic Workflows</text>  <text x="422" y="238" fill="#ddd8f0" font-size="10" text-anchor="middle">Composer à l'exécution</text>  <text x="422" y="256" fill="#7874a0" font-size="9" text-anchor="middle">étapes assemblées au runtime</text>  <rect x="565" y="8" width="175" height="259" rx="8" fill="none" stroke="#2e3250" stroke-width="1" stroke-dasharray="4,3"/>  <text x="652" y="35" fill="#7874a0" font-size="10" font-weight="600" text-anchor="middle">COMPOSITION</text>  <text x="652" y="62" fill="#4f8ef7" font-size="10" text-anchor="middle">Augmented LLM = Tools</text>  <text x="652" y="105" fill="#2dd4a0" font-size="10" text-anchor="middle">Workflow</text>  <text x="652" y="121" fill="#7874a0" font-size="9" text-anchor="middle">= primitives câblées</text>  <text x="652" y="155" fill="#a78bfa" font-size="10" text-anchor="middle">Agent</text>  <text x="652" y="171" fill="#7874a0" font-size="9" text-anchor="middle">= modèle choisit</text>  <text x="652" y="210" fill="#4f8ef7" font-size="10" text-anchor="middle">Multi-agent</text>  <text x="652" y="226" fill="#7874a0" font-size="9" text-anchor="middle">= Orchestrator</text>  <text x="652" y="242" fill="#7874a0" font-size="9" text-anchor="middle">+ Subagents</text></svg></div>
+<div class="callout rule"><div class="callout-label">Règle</div><strong>Parcimonie :</strong> minimum de primitives. Chaque ajout = latence + tokens + surface à gouverner.</div>
+<div class="section-nav"><button class="nav-btn btn-prev" onclick="showSection(2)" >← Précédent</button><span class="nav-progress">4 / 6</span><button class="nav-btn btn-next" onclick="showSection(4)" >Suivant →</button></div></div>
+<div class="section " data-index="4"><h2 id="s-lection-de-mod-les">Sélection de modèles</h2>
+<h3 id="les-3-patterns">Les 3 patterns</h3>
+<div class="diagram-wrap"><svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">  <line x1="70" y1="330" x2="760" y2="330" stroke="#2e3250" stroke-width="1.5"/>  <line x1="70" y1="330" x2="70" y2="30" stroke="#2e3250" stroke-width="1.5"/>  <polygon points="760,326 770,330 760,334" fill="#2e3250"/>  <polygon points="66,30 70,20 74,30" fill="#2e3250"/>  <text x="415" y="358" fill="#7874a0" font-size="11" text-anchor="middle">PREDICTABILITE →</text>  <text x="22" y="180" fill="#7874a0" font-size="11" text-anchor="middle" transform="rotate(-90,22,180)">AUTONOMIE →</text>  <rect x="82" y="40" width="220" height="120" rx="8" fill="#1c1f2e" stroke="#a78bfa" stroke-width="1.5"/>  <text x="192" y="68" fill="#a78bfa" font-size="13" font-weight="bold" text-anchor="middle">AGENT</text>  <text x="192" y="88" fill="#ddd8f0" font-size="10" text-anchor="middle">Autonomie elevee</text>  <text x="192" y="104" fill="#ddd8f0" font-size="10" text-anchor="middle">Trajectoire imprevisible</text>  <text x="192" y="120" fill="#7874a0" font-size="9" text-anchor="middle">Le modele controle le flux</text>  <text x="192" y="148" fill="#f87171" font-size="9" text-anchor="middle">Cout · Latence · Audit</text>  <rect x="295" y="160" width="230" height="110" rx="8" fill="#1c1f2e" stroke="#2dd4a0" stroke-width="1.5"/>  <text x="410" y="186" fill="#2dd4a0" font-size="13" font-weight="bold" text-anchor="middle">WORKFLOW</text>  <text x="410" y="206" fill="#ddd8f0" font-size="10" text-anchor="middle">Forme previsible</text>  <text x="410" y="222" fill="#ddd8f0" font-size="10" text-anchor="middle">Jugement delimite par etape</text>  <text x="410" y="238" fill="#7874a0" font-size="9" text-anchor="middle">Votre code controle le flux</text>  <text x="410" y="256" fill="#2dd4a0" font-size="9" text-anchor="middle">Observable · Testable</text>  <rect x="525" y="250" width="225" height="65" rx="8" fill="#1c1f2e" stroke="#4f8ef7" stroke-width="1.5"/>  <text x="637" y="272" fill="#4f8ef7" font-size="13" font-weight="bold" text-anchor="middle">AUGMENTED LLM</text>  <text x="637" y="290" fill="#ddd8f0" font-size="10" text-anchor="middle">Un seul appel delimite</text>  <text x="637" y="306" fill="#7874a0" font-size="9" text-anchor="middle">Peut inclure Tools / RAG</text></svg></div>
+<h3 id="arbre-de-d-cision-quel-pattern-choisir">Arbre de décision — quel pattern choisir ?</h3>
+<div class="mermaid">
+flowchart TD
+  Q1{Etapes previsibles ?} -- Non --> AG[Agent]
+  Q1 -- Oui --> Q2{Cout erreur eleve ?}
+  Q2 -- Oui --> WF[Workflow]
+  Q2 -- Non --> Q3{Observabilite requise ?}
+  Q3 -- Oui --> WF2[Workflow]
+  Q3 -- Non --> Q4{Latence ou tokens critiques ?}
+  Q4 -- Oui --> AL[Augmented LLM]
+  Q4 -- Non --> WF3[Workflow]
+  style AG fill:#1c1f2e,stroke:#a78bfa,color:#ddd8f0
+  style WF fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style WF2 fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style WF3 fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style AL fill:#1c1f2e,stroke:#4f8ef7,color:#ddd8f0
+</div>
+<div class="callout rule"><div class="callout-label">Règle</div><strong>Erreur fréquente :</strong> choisir Agent parce que la tâche "semble ouverte". Si les étapes sont connaissables à l'avance → <strong>Workflow</strong>.</div>
+<h3 id="les-4-sous-patterns-du-workflow">Les 4 sous-patterns du Workflow</h3>
+<div class="mermaid">
+flowchart TB
+  subgraph Chaining
+    direction LR
+    c1[Extraire] --> c2[Classifier] --> c3[Synthétiser]
+  end
+  subgraph Routing
+    direction LR
+    r0[Input] --> r1{Type ?}
+    r1 -->|Billing| r2[Agent billing]
+    r1 -->|Tech| r3[Doc tech]
+    r1 -->|Escalade| r4[Humain]
+  end
+  subgraph Parallelization
+    direction LR
+    p1[Contrat 1] --> p4[Synthese]
+    p2[Contrat 2] --> p4
+    p3[Contrat N] --> p4
+  end
+  subgraph EvaluatorOptimizer
+    direction LR
+    e1[Generer] --> e2{OK ?}
+    e2 -->|Non| e1
+    e2 -->|Oui| e3[Output]
+  end
+</div>
+<div class="flashcards-wrap"><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Quand utiliser Evaluator-Optimizer plutôt que Chaining ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r">Quand la qualité est <strong>vérifiable</strong> mais une seule tentative n'est pas fiable. Ex : code + suite de tests.</div></div></div></div><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Agent vs Workflow — différence fondamentale ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r"><strong>Flux de contrôle</strong> — Workflow : votre code. Agent : le modèle. L'agent échoue silencieusement, le Workflow avec une erreur déboguable.</div></div></div></div></div>
+<div class="section-nav"><button class="nav-btn btn-prev" onclick="showSection(3)" >← Précédent</button><span class="nav-progress">5 / 6</span><button class="nav-btn btn-next" onclick="showSection(5)" >Suivant →</button></div></div>
+<div class="section " data-index="5"><h2 id="syst-mes-multi-agents">Systèmes multi-agents</h2>
+<h3 id="architecture-fan-out">Architecture Fan-out</h3>
+<div class="mermaid">
+flowchart TD
+  O[Orchestrator] --> S1[Sub-agent 1]
+  O --> S2[Sub-agent 2]
+  O --> S3[Sub-agent N]
+  S1 --> R[Synthese]
+  S2 --> R
+  S3 --> R
+  style O fill:#1c1f2e,stroke:#4f8ef7,color:#ddd8f0
+  style S1 fill:#1c1f2e,stroke:#a78bfa,color:#ddd8f0
+  style S2 fill:#1c1f2e,stroke:#a78bfa,color:#ddd8f0
+  style S3 fill:#1c1f2e,stroke:#a78bfa,color:#ddd8f0
+  style R fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+</div>
+<h3 id="r-cup-rabilit-des-d-faillances">Récupérabilité des défaillances</h3>
+<div class="mermaid">
+flowchart LR
+  F1[Sub-agent echoue] -- Recuperable --> A1[Relancer ou Rediriger]
+  F2[Orchestrator echoue] -- Irrecuperable --> A2[Execution perdue]
+  style F1 fill:#1c1f2e,stroke:#fbbf24,color:#ddd8f0
+  style F2 fill:#1c1f2e,stroke:#f87171,color:#ddd8f0
+  style A1 fill:#1c1f2e,stroke:#2dd4a0,color:#ddd8f0
+  style A2 fill:#1c1f2e,stroke:#f87171,color:#ddd8f0
+</div>
+<div class="callout rule"><div class="callout-label">Règle</div><strong>Contrôle de couverture :</strong> résultats reçus == unités envoyées. Signaler l'écart <strong>avant</strong> synthèse.</div>
+<div class="callout situation"><div class="callout-label">Situation réelle</div><strong>Audit contractuel — 50 sections, 2 unités tombées :</strong>
+- Orchestrator synthétise "48 sections examinées" sans contrôle de couverture
+- Résumé fluide et confiant → personne ne détecte les 2 manquantes
+- Transmis au responsable juridique comme complet</div>
+<div class="flashcards-wrap"><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Asymétrie Orchestrator vs Sub-agent — laquelle est récupérable ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r"><strong>Sub-agent</strong> (relancer). <strong>Orchestrator</strong> : souvent irrécupérable — il détient l'objectif et la synthèse.</div></div></div></div><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="flashcard-inner"><div class="flashcard-front"><div class="fc-hint">cliquer pour répondre</div><div class="fc-q">Pourquoi un résumé fluide est dangereux dans un Fan-out ?</div></div><div class="flashcard-back"><div class="fc-hint">réponse</div><div class="fc-r">Il <strong>masque les unités manquantes</strong>. La confiance apparente empêche de détecter les défaillances silencieuses.</div></div></div></div></div><div class="section-nav"><button class="nav-btn btn-prev" onclick="showSection(4)" >← Précédent</button><span class="nav-progress">6 / 6</span><button class="nav-btn btn-next" onclick="showSection(6)" disabled>Suivant →</button></div></div>
+</div>
+</body>
+</html>
