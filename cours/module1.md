@@ -85,6 +85,9 @@ R: Claude peut être très confiant et **faux simultanément**. La vérification
 
 Q: Knowledge gap → atténuation ?
 R: Système externe comme référence : **RAG, Tools, MCP**. Jamais la knowledge du modèle seul.
+
+Q: Context window limit → consequence architecturale ?
+R: Pas de memoire persistante native — il faut **externaliser** l'etat (base, fichier, memoire vectorielle).
 :::
 
 ## Décomposition
@@ -121,6 +124,12 @@ R: **Système existant** — lookup en base, pas un jugement.
 
 Q: "Émettre le remboursement" → qui ?
 R: **Humain** — action financière irréversible, même si l'éligibilité est automatique.
+
+Q: Règle déterministe (ex : seuil £5 000) → erreur de décomposition ?
+R: La confier à Claude. Les seuils exacts doivent aller au **Système existant** — Claude est probabiliste.
+
+Q: Claude + outil externe = quel pattern minimum ?
+R: **Augmented LLM** — un appel + tool/RAG. Pas encore un Workflow.
 :::
 
 ## Les 7 primitives
@@ -261,6 +270,12 @@ R: Quand la qualité est **vérifiable** mais une seule tentative n'est pas fiab
 
 Q: Agent vs Workflow — différence fondamentale ?
 R: **Flux de contrôle** — Workflow : votre code. Agent : le modèle. L'agent échoue silencieusement, le Workflow avec une erreur déboguable.
+
+Q: Evaluator-Optimizer — quand le préférer à un simple Chaining ?
+R: Quand la qualité est **vérifiable objectivement** (tests, critères) et qu'une seule passe est insuffisante.
+
+Q: Fine-tuning — quand est-ce justifié selon Anthropic ?
+R: En **dernier recours** — après avoir épuisé prompting, tools et Workflows. Disponibilité limitée sur Claude.
 :::
 
 ## Systèmes multi-agents
@@ -311,4 +326,10 @@ R: **Sub-agent** (relancer). **Orchestrator** : souvent irrécupérable — il d
 
 Q: Pourquoi un résumé fluide est dangereux dans un Fan-out ?
 R: Il **masque les unités manquantes**. La confiance apparente empêche de détecter les défaillances silencieuses.
+
+Q: Contrôle de couverture Fan-out — quand l'effectuer ?
+R: **Avant** la synthèse — vérifier que résultats reçus == unités envoyées. Sinon signaler l'écart.
+
+Q: Orchestrator vs Sub-agent — qui détient l'objectif global ?
+R: L'**Orchestrator** — sa défaillance est donc souvent irrécupérable contrairement à un sub-agent.
 :::
